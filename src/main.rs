@@ -1,19 +1,15 @@
+mod config_store;
+
 use serde::{Deserialize, Serialize};
 
 use std::path::Path;
-use std::sync::Mutex;
-use std::io::{Write, Read};
+use config_store::ConfigFileGenerator;
 use lazy_static::lazy_static;
-use restic_interfacer::{ResticConfig, ResticStorageConfig, BackupTarget};
+use restic_interfacer::{ResticConfig, ResticStorageConfig, BackupTarget, ForgetRate};
 use std::collections::HashMap;
 
 lazy_static! {
-    static ref CONFIG_FILE: Mutex<std::fs::File> = Mutex::new(std::fs::OpenOptions::new()
-            .create(true)
-            .read(true)
-            .write(true)
-            .open("restic_gui_backup.config")
-            .expect("Failed to open/create config file"));
+    static ref CONFIG_FILE_GENERATOR: ConfigFileGenerator = ConfigFileGenerator::new();
 }
 
 #[derive(Debug, Deserialize)]
@@ -84,6 +80,7 @@ fn get_dir_list<P: AsRef<Path>>(
 struct ResticBackupConfiguration {
 	config: restic_interfacer::ResticConfig,
 	targets: Vec<restic_interfacer::BackupTarget>,
+	forget_rate: ForgetRate
 }
 
 //impl ResticBackupConfiguration {
@@ -95,27 +92,34 @@ struct ResticBackupConfiguration {
 //}
 
 fn load_stored_config() -> HashMap<String, ResticBackupConfiguration> {
-	let file = std::fs::File::open("restic_gui_backup.config");
+	let file = CONFIG_FILE_GENERATOR.get_file_handle_read();
 
 	match file {
-		Ok(file) => serde_json::from_reader(file).unwrap(),
+		Ok(file) => serde_json::from_reader(&*file).unwrap(),
 		Err(ref err) if err.kind() == std::io::ErrorKind::NotFound => HashMap::new(),
 		Err(err) => panic!(err)
 	}
 }
 
 fn save_configs(to_save: &HashMap<String, ResticBackupConfiguration>) {
-	let file = std::fs::OpenOptions::new()
-		.create(true)
-		.write(true)
-		.open("restic_gui_backup.config")
+	let file = CONFIG_FILE_GENERATOR.get_file_handle_write()
 		.expect("Failed to open/create config file");
 
-	serde_json::to_writer(file, to_save).expect("Failed to write")
+	serde_json::to_writer(&*file, to_save).expect("Failed to write")
 }
 
 fn main() {
 	let mut loaded_configs: HashMap<String, ResticBackupConfiguration> = load_stored_config();
+
+	loaded_configs.insert("Config 5".to_owned(), ResticBackupConfiguration {
+		config: ResticConfig::new("1234".to_owned(), ResticStorageConfig::Local("/mnt/d/FDrive/Documents/RustProjects/restic-interfacer/sample_repo".into())),
+		targets: vec![BackupTarget::new_from_string(&["./src", "./frontend"], vec!["node_modules".to_owned()], Vec::new()).unwrap()],
+		forget_rate: ForgetRate {
+			keep_weekly: 5,
+			keep_daily: 7,
+			..Default::default()
+		}
+	});
 
 	ws::listen("127.0.0.1:3012", |out| {
 		move |msg: ws::Message| {
