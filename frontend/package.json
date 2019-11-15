@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint --fix"
   },
   "dependencies": {
+    "spectre.css": "^0.5.8",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
     "vue-native-websocket": "^2.0.13",
@@ -44,7 +45,8 @@
       "space-before-function-paren": [
         "error",
         "never"
-      ]
+      ],
+      "camelcase": "off"
     },
     "parserOptions": {
       "parser": "@typescript-eslint/parser"

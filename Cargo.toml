@@ -14,3 +14,6 @@ restic-interfacer = {path = "../restic-interfacer"}
 globset = "*"
 lazy_static = "*"
 error-chain = "*"
+base64 = "0.11"
+chrono = "0.4.9"
+color-backtrace = "0.2.3"

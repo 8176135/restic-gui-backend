@@ -18,6 +18,7 @@ impl ConfigFileGenerator {
 		let file = std::fs::OpenOptions::new()
 			.create(true)
 			.write(true)
+			.truncate(true)
 			.open("restic_gui_backup.config")?;
 
 		Ok(ConfigFile(file, lock))

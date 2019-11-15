@@ -1,6 +1,10 @@
 import Vue from "vue"
 import App from "./App.vue"
+// @ts-ignore
 import VueNativeSock from "vue-native-websocket"
+// import Icons from 'uikit/dist/js/uikit-icons';
+
+// UIkit.use(Icons);
 
 Vue.config.productionTip = false
 

@@ -1,15 +1,9 @@
 <template>
-  <div id="app">
+  <div id="app" class="container">
     <img alt="Vue logo" src="./assets/logo.png">
-    <ul id="demo">
-      <ListItem
-        class="item"
-        :item="treeData"
-        :isFolder="true"
-        @update-contents="updateContents"
-      ></ListItem>
+    <ul id="illustration">
+      <AllConfigs class="allConfigs"></AllConfigs>
     </ul>
-    <button @click="getdata">Get data stuff</button>
   </div>
 </template>
 
@@ -17,40 +11,18 @@
 import { Component, Vue } from "vue-property-decorator"
 import HelloWorld from "./components/HelloWorld.vue"
 import ListItem from "./components/ListItem.vue"
-
-const treeData2 = {
-  name: "/"
-}
+import AllConfigs from "./components/AllConfigs.vue"
+import { FileItem } from "./interfaces"
+import PreviewElems from "./components/PreviewElems.vue"
 
 @Component({
   components: {
     HelloWorld,
-    ListItem
+    ListItem,
+    AllConfigs
   }
 })
 export default class App extends Vue {
-  treeData: Object = treeData2;
-
-  updateContents(item, path) {
-    this.$socket.sendObj({ type: "PathLookup", path: path })
-
-    this.$options.sockets.onmessage = (data) => {
-      delete this.$options.sockets.onmessage
-
-      Vue.set(item, "children", JSON.parse(data.data))
-    }
-  }
-
-  getdata() {
-    this.$socket.sendObj({ type: "RetrieveAllConfigs" })
-
-    this.$options.sockets.onmessage = (data) => {
-      delete this.$options.sockets.onmessage
-
-      console.log(JSON.parse(data.data))
-    }
-  }
-
   mounted() {
 
   }
@@ -58,6 +30,9 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+// Import full Spectre source code
+@import "node_modules/spectre.css/src/spectre";
+
 #app {
   $color: #2c3e50;
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -76,10 +51,9 @@ export default class App extends Vue {
   font-weight: bold;
 }
 
-ul {
-  padding-left: 1em;
-  line-height: 1.5em;
-  list-style-type: dot;
+#illustration ul, #illustration {
+  list-style-type: none;
+  list-style: disc outside !important;
 }
 
 .included {

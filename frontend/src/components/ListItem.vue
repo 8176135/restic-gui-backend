@@ -10,17 +10,17 @@
     </ul>
   </li>
 </template>
-
 <script lang="ts">
 import Component from "vue-class-component"
 import { Prop, Vue, Watch } from "vue-property-decorator"
+import { FileItem } from "../interfaces"
 
 @Component
 export default class ListItem extends Vue {
-  @Prop() item: Object;
-  @Prop() isFolder: Boolean;
+  @Prop() item!: FileItem;
+  @Prop() isFolder!: boolean;
 
-  isOpen: Boolean = false;
+  isOpen: boolean = false;
 
   toggle() {
     if (this.isFolder) {
@@ -31,15 +31,16 @@ export default class ListItem extends Vue {
     }
   }
 
-  updateContents(item, path) {
+  updateContents(item: FileItem, path: string) {
     this.$emit("update-contents", item, this.item.name + "/" + path)
   }
 
   @Watch("item", { deep: false }) // Bit of a hack
-  onPropertyChanged(value, oldValue) {
+  onPropertyChanged(value: any, oldValue: any) {
     if (oldValue.children === undefined || value.children === undefined) {
       this.isOpen = false
     }
   }
 }
+
 </script>
