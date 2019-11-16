@@ -170,21 +170,9 @@ fn main() {
 	color_backtrace::install();
 
 	let mut loaded_configs: HashMap<String, ResticBackupConfiguration> = load_stored_config();
-
-	loaded_configs.insert("Config 99".to_owned(), ResticBackupConfiguration {
-		config: ResticConfig::new("1234".to_owned(), ResticStorageConfig::Local("/mnt/d/FDrive/Documents/RustProjects/restic-interfacer/sample_repo".into())),
-		targets: BackupTarget::new_from_string(&["./src", "./frontend"], vec!["node_modules".to_owned()], Vec::new()).unwrap(),
-		forget_rate: ForgetRate {
-			keep_weekly: 5,
-			keep_daily: 7,
-			..Default::default()
-		},
-		backup_interval: std::time::Duration::from_secs(60 * 60 * 20),
-	});
-
 	save_configs(&loaded_configs);
 
-//	std::thread::spawn(automated_backups::backup_scheduler);
+	std::thread::spawn(automated_backups::backup_scheduler);
 
 	ws::listen("127.0.0.1:3012", |out| {
 		move |msg: ws::Message| {

@@ -18,7 +18,6 @@ pub fn backup_scheduler() {
 //	std::thread::sleep(Duration::from_secs(10 * 60));
 	loop {
 		let data = crate::load_stored_config();
-		dbg!(&data);
 		let since_the_epoch = std::time::SystemTime::now()
 			.duration_since(std::time::UNIX_EPOCH)
 			.expect("Time went backwards")

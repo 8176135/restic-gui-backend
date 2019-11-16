@@ -1,0 +1,1 @@
+./target/debug/restic-gui-backend
